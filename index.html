@@ -16,101 +16,103 @@
 </head>
 <body>
 
-<div class="container">
-	
-</div>
+	<div id="output"></div>
+	<input type="file" id="input" onchange="selectFile(this.files[0])">
+	<script>
+		function selectFile(file) {
+			console.log(file)
+		}
+	</script>
+	<script type="text/javascript">
+		// 拼成图像的字符
+		var chars = [
+			'  ',
+			'  ',
+			'. ',
+			': ',
+			'! ',
+			'o ',
+			'# ',
+			'#*',
+			'#$',
+		];
+		var chars	 = [
+			'  ',
+			'. ',
+			'..',
+			':.',
+			'::',
+			'1:',
+			'11',
+			'10',
+			'00',
+			'##',
+			'##',
+			'##',
+			'##',
+			'##',
+		];
 
-<script type="text/javascript" src="../lib/jquery.js"></script>
-<script type="text/javascript">
-	// 拼成图像的字符
-	var chars = [
-		'  ',
-		'  ',
-		'. ',
-		': ',
-		'! ',
-		'o ',
-		'# ',
-		'#*',
-		'#$',
-	];
-	var chars	 = [
-		'  ',
-		'. ',
-		'..',
-		':.',
-		'::',
-		'1:',
-		'11',
-		'10',
-		'00',
-		'##',
-		'##',
-		'##',
-		'##',
-		'##',
-	];
+		// 源图片
+		var img = new Image;
+		img.src = 'fbb.jpg';
+		img.src = 'BZ1601091608048453.jpg';
+		// img.src = 'c.jpg';
+		// 源图片加载完成后
+		img.onload = function(){
+			var width = this.width;
+			var height = this.height;
+			// 根据源图片宽高创建canvas
+			var canvas = document.createElement('canvas');
+			canvas.width = width;
+			canvas.height = height;
+			document.body.appendChild(canvas);
+			// canvas 上下文
+			var context = canvas.getContext('2d');
+			// 在canvas 上画上源图
+			context.drawImage(img,0,0);
 
-	// 源图片
-	var img = new Image;
-	img.src = 'fbb.jpg';
-	img.src = 'BZ1601091608048453.jpg';
-	// img.src = 'c.jpg';
-	// 源图片加载完成后
-	img.onload = function(){
-		var width = this.width;
-		var height = this.height;
-		// 根据源图片宽高创建canvas
-		var canvas = document.createElement('canvas');
-		canvas.width = width;
-		canvas.height = height;
-		document.body.appendChild(canvas);
-		// canvas 上下文
-		var context = canvas.getContext('2d');
-		// 在canvas 上画上源图
-		context.drawImage(img,0,0);
-
-		// canvas 分格
-		var cellX = 100;
-		var cellX = 50;
-		var cellWidth = parseInt(width/cellX);
-		var cellY = parseInt(height/cellWidth);
-		var cellHeight = cellWidth;
-		// 循环每个格子
-		var charsStr = '<pre>';
-		for (var y = 0; y < cellY; y++) {
-			for (var x = 0; x < cellX; x++) {
-				// 一个格子的图像数据
-				var imageDate = context.getImageData(x*cellWidth,y*cellHeight, cellWidth,cellHeight);
-				// 格子所有像素值总和
-				var rgbAll = 0;
-				for(var i = 0; i<imageDate.data.length; i+=4){
-					var r = imageDate.data[i+0];
-					var g = imageDate.data[i+1];
-					var b = imageDate.data[i+2];
-					var a = imageDate.data[i+3];
-					// var avg = (r+g+b)/3;
-					rgbAll += r+g+b;
-				}
-				// 格子明度百分比
-				var pc = rgbAll/ (imageDate.data.length*255);
-				// 对应的字符
-				var charIndex = parseInt(chars.length*pc);
-				// var charIndex = chars.length-1 - charIndex;
-				var aChar = chars[charIndex];
-				charsStr += aChar;
+			// canvas 分格
+			var cellX = 100;
+			var cellX = 50;
+			var cellWidth = parseInt(width/cellX);
+			var cellY = parseInt(height/cellWidth);
+			var cellHeight = cellWidth;
+			// 循环每个格子
+			var charsStr = '<pre>';
+			for (var y = 0; y < cellY; y++) {
+				for (var x = 0; x < cellX; x++) {
+					// 一个格子的图像数据
+					var imageDate = context.getImageData(x*cellWidth,y*cellHeight, cellWidth,cellHeight);
+					// 格子所有像素值总和
+					var rgbAll = 0;
+					for(var i = 0; i<imageDate.data.length; i+=4){
+						var r = imageDate.data[i+0];
+						var g = imageDate.data[i+1];
+						var b = imageDate.data[i+2];
+						var a = imageDate.data[i+3];
+						// var avg = (r+g+b)/3;
+						rgbAll += r+g+b;
+					}
+					// 格子明度百分比
+					var pc = rgbAll/ (imageDate.data.length*255);
+					// 对应的字符
+					var charIndex = parseInt(chars.length*pc);
+					// var charIndex = chars.length-1 - charIndex;
+					var aChar = chars[charIndex];
+					charsStr += aChar;
+				};
+				// 换行
+				charsStr+='\n';
 			};
-			// 换行
-			charsStr+='\n';
+			charsStr += '</pre>';
+
+			// 输出
+			output.innerHTML = charsStr;
+
+			// console.log(canvas.toDataURL('image/jpeg'));
+
 		};
-		charsStr += '</pre>';
-
-		// 输出
-		$('.container').append(charsStr);
-
-		// console.log(canvas.toDataURL('image/jpeg'));
-
-	};
-</script>
+	</script>
 </body>
 </html>
